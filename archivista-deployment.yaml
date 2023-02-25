@@ -29,16 +29,12 @@ spec:
         ports:
           - containerPort: 8082
         livenessProbe:
-          httpGet:
-            path: /
+          tcpSocket:
             port: 8082
-          failureThreshold: 2
           initialDelaySeconds: 15
           periodSeconds: 60
-          timeoutSeconds: 3
         readinessProbe:
-          httpGet:
-            path: /
+          tcpSocket:
             port: 8082
           initialDelaySeconds: 5
           periodSeconds: 5
