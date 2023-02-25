@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archivista
+  namespace: archivista
+  labels:
+    app: archivista
+spec:
+  selector:
+    matchLabels:
+      app: archivista
+  template:
+    metadata:
+      labels:
+        app: archivista
+    spec:
+      containers:
+      - name: archivista
+        image: ghcr.io/adsk-pset-de-hackathon/archivista/archivista:latest
+        volumeMounts:
+        - name: spiffe-workload-api
+          mountPath: /run/spire/sockets
+          readOnly: true
+        env:
+        - name: ARCHIVIST_ENABLE_SPIFFE
+          value: "true"
+        - name: ARCHIVIST_SPIFFE_ADDRESS
+          value: unix:///run/spire/sockets/spire-agent.sock
+      volumes:
+      - name: spiffe-workload-api
+        csi:
+          driver: "csi.spiffe.io"
+          readOnly: true
