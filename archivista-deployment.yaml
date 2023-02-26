@@ -14,6 +14,7 @@ spec:
       labels:
         app: archivista
     spec:
+      serviceAccountName: archivista
       containers:
       - name: archivista
         image: ghcr.io/adsk-pset-de-hackathon/archivista/archivista:latest
@@ -22,22 +23,40 @@ spec:
           mountPath: /run/spire/sockets
           readOnly: true
         env:
+        - name: ARCHIVIST_LISTEN_ON
+          value: tcp://0.0.0.0:8082
+        - name: ARCHIVIST_SQL_STORE_CONNECTION_STRING
+          value: "devops_rds:tap3pma.tfx2FJZ6ecz@tcp(archivista.ctics9ngltl4.us-west-2.rds.amazonaws.com:3306)/archivista"
+        - name: ARCHIVIST_STORAGE_BACKEND
+          value: FILE
+        - name: ARCHIVIST_BLOB_STORE_USE_IRSA
+          value: "true"
+        - name: ARCHIVIST_BLOB_STORE_BUCKET_NAME
+          value: archivist-bucket
+        - name: ARCHIVIST_BLOB_STORE_ENDPOINT
+          value: "s3.dualstack.us-west-2.amazonaws.com"
         - name: ARCHIVIST_ENABLE_SPIFFE
           value: "true"
         - name: ARCHIVIST_SPIFFE_ADDRESS
           value: unix:///run/spire/sockets/spire-agent.sock
+        - name: ARCHIVIST_LOG_LEVEL
+          value: DEBUG
         ports:
           - containerPort: 8082
-        livenessProbe:
-          tcpSocket:
-            port: 8082
-          initialDelaySeconds: 15
-          periodSeconds: 60
-        readinessProbe:
-          tcpSocket:
-            port: 8082
-          initialDelaySeconds: 5
-          periodSeconds: 5
+            #livenessProbe:
+            #  httpGet:
+            #    path: /
+            #    port: 8082
+            #  failureThreshold: 2
+            #  initialDelaySeconds: 15
+            #  periodSeconds: 60
+            #  timeoutSeconds: 3
+            #readinessProbe:
+            #  httpGet:
+            #    path: /
+            #    port: 8082
+            #  initialDelaySeconds: 5
+            #  periodSeconds: 5
       volumes:
       - name: spiffe-workload-api
         csi:

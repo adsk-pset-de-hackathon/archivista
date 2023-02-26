@@ -5,7 +5,7 @@ metadata:
   name: archivista
   namespace: archivista
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: archivista
   ports:
